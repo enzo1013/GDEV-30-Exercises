@@ -17,24 +17,18 @@
 #include <gdev.h>
 
 // change this to your desired window attributes
-#define WINDOW_WIDTH  1280
-#define WINDOW_HEIGHT 720
-#define WINDOW_TITLE  "Hello Trifxxxe"
+#define WINDOW_WIDTH  768
+#define WINDOW_HEIGHT 768
+#define WINDOW_TITLE  "GDEV 30 Exercise 1"
 GLFWwindow *pWindow;
 
 // define a vertex array to hold our vertices
 float vertices[] =
 {
     // position (x, y, z)    color (r, g, b)
-    -0.40f, -0.50f,  0.00f,  1.0f, 1.0f, 1.0f,
-     0.00f, -0.50f,  0.00f,  1.0f, 1.0f, 0.0f,
-    -0.20f,  0.00f,  0.00f,  1.0f, 1.0f, 0.0f,
-     0.00f, -0.50f,  0.00f,  1.0f, 1.0f, 0.0f,
-     0.40f, -0.50f,  0.00f,  1.0f, 1.0f, 1.0f,
-     0.20f,  0.00f,  0.00f,  1.0f, 1.0f, 0.0f,
-    -0.20f,  0.00f,  0.00f,  1.0f, 1.0f, 0.0f,
-     0.20f,  0.00f,  0.00f,  1.0f, 1.0f, 0.0f,
-     0.00f,  0.50f,  0.00f,  1.0f, 1.0f, 1.0f
+    1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+    -1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+    1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 1.0f
 };
 
 // define OpenGL object IDs to represent the vertex array and the shader program in the GPU
@@ -88,10 +82,6 @@ void render()
 
     // compute a value for the glow amount for this frame
     float glow = fabs(sin(glfwGetTime() / 3.0f)) / 2.0f + 0.5f;
-    float t = (float)(glfwGetTime());
-    float scaleFactor = sin(t);
-
-    float xcaleFactor = cos(t);
 
     // using our shader program...
     glUseProgram(shader);
@@ -99,8 +89,6 @@ void render()
     // ... set the uniform variables of the shader...
     // (in this case, simply set the value of the glow)
     glUniform1f(glGetUniformLocation(shader, "glow"), glow);
-    glUniform1f(glGetUniformLocation(shader, "scaleFactor"), scaleFactor);
-    glUniform1f(glGetUniformLocation(shader, "xcaleFactor"), xcaleFactor);
 
     // ... then draw our triangles
     glBindVertexArray(vao);

@@ -10,13 +10,10 @@
 
 layout (location = 0) in vec3 vertexPosition;
 layout (location = 1) in vec3 vertexColor;
-uniform float glow;
-uniform float scaleFactor;
-uniform float xcaleFactor;
 out vec3 shaderColor;
 
 void main()
 {
-    gl_Position = vec4((vertexPosition.x + xcaleFactor), (vertexPosition.y + scaleFactor), (vertexPosition.z), 1.0f);
-    shaderColor = vertexColor * glow;
+    gl_Position = vec4((vertexPosition.x), (vertexPosition.y), (vertexPosition.z), 1.0f);
+    shaderColor = vertexColor;
 }
