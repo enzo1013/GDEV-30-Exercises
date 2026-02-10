@@ -72,7 +72,7 @@ bool setup()
     // with unique VAO and VBO IDs, and follow the same process above to upload them to the GPU
 
     // load our shader program
-    shader = gdevLoadShader("demo2.vs", "demo2.fs");
+    shader = gdevLoadShader("exercise1.vs", "exercise1.fs");
     if (! shader)
         return false;
 
