@@ -26,9 +26,29 @@ GLFWwindow *pWindow;
 float vertices[] =
 {
     // position (x, y, z)    color (r, g, b)
-    1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-    -1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-    1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 1.0f
+
+    // right ear
+    0.55f, 0.50f, 0.0f, 1.0f, 1.0f, 1.0f,
+    0.525f, 0.65f, 0.0f, 1.0f, 1.0f, 1.0f,
+    0.50f, 0.50f, 0.0f, 1.0f, 1.0f, 1.0f,
+    
+    0.525f, 0.55f, 0.0f, 1.0f, 1.0f, 1.0f,
+    0.375f, 0.425f, 0.0f, 1.0f, 1.0f, 1.0f,
+    0.50f, 0.40f, 0.0f, 1.0f, 1.0f, 1.0f,
+
+    0.55f, 0.50f, 0.0f, 1.0f, 1.0f, 1.0f,
+    0.510f, 0.50f, 0.0f, 1.0f, 1.0f, 1.0f,
+    0.50f, 0.40f, 0.0f, 1.0f, 1.0f, 1.0f,
+
+    // left ear
+    0.30f, 0.45f, 0.0f, 1.0f, 1.0f, 1.0f,
+    0.20f, 0.45f, 0.0f, 1.0f, 1.0f, 1.0f,
+    0.25f, 0.55f, 0.0f, 1.0f, 1.0f, 1.0f,
+
+    0.25f, 0.55f, 0.0f, 1.0f, 1.0f, 1.0f,
+    0.255f, 0.475f, 0.0f, 1.0f, 1.0f, 1.0f,
+    0.35f, 0.625f, 0.0f, 1.0f, 1.0f, 1.0f,
+
 };
 
 // define OpenGL object IDs to represent the vertex array and the shader program in the GPU
