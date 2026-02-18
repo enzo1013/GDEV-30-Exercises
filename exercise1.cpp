@@ -136,6 +136,25 @@ float vertices[] =
     0.50f, -.16f, 0.0f, 1.0f, 1.0f, 1.0f,
     0.55f, -.18f, 0.0f, 1.0f, 1.0f, 1.0f,
 
+    // small spike six
+    0.50f, -.16f, 0.0f, 1.0f, 1.0f, 1.0f,
+    0.35f, -.18f, 0.0f, 1.0f, 1.0f, 1.0f,
+    0.425f, -.24f, 0.0f, 1.0f, 1.0f, 1.0f,
+
+    // small spike seven
+    0.35f, -.18f, 0.0f, 1.0f, 1.0f, 1.0f,
+    0.27f, -.14f, 0.0f, 1.0f, 1.0f, 1.0f,
+    0.30f, -.22f, 0.0f, 1.0f, 1.0f, 1.0f,
+
+    0.24f, -.125f, 0.0f, 1.0f, 1.0f, 1.0f,
+    0.30f, -.20f, 0.0f, 1.0f, 1.0f, 1.0f,
+    0.27f, -.14f, 0.0f, 1.0f, 1.0f, 1.0f,
+
+    // small spike eight
+    0.24f, -.125f, 0.0f, 1.0f, 1.0f, 1.0f,
+    0.18f, -.07f, 0.0f, 1.0f, 1.0f, 1.0f,
+    0.20f, -.16f, 0.0f, 1.0f, 1.0f, 1.0f,
+
 };
 
 // define OpenGL object IDs to represent the vertex array and the shader program in the GPU
