@@ -25,7 +25,7 @@ GLFWwindow *pWindow;
 // define a vertex array to hold our vertices
 float vertices[] =
 {
-    // position (x, y, z)    color (r, g, b)
+    // position (x, y, z)    color (r, g, b)    id tag
 
     // main head
     -0.9816f, 0.7452f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
