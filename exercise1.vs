@@ -20,7 +20,7 @@ void main()
 {
     gl_Position = vec4((vertexPosition.x), (vertexPosition.y), (vertexPosition.z), 1.0f);
 
-    if (vertexType > 0.5 && vertexType < 1.5) {
+    if (vertexType == 1) {
 
         float grad = (vertexPosition.x + 1.0) / 2.0;
         float phase = grad + (time * 5);
@@ -31,7 +31,7 @@ void main()
             cos(phase)
         );
 
-    } else if (vertexType > 1.5) {
+    } else if (vertexType == 2) {
         
         float grad = (vertexPosition.x + 1.0) * 0.5;
         float rotateSpeed = 0.5;
