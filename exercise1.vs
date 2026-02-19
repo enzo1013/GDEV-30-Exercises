@@ -10,10 +10,27 @@
 
 layout (location = 0) in vec3 vertexPosition;
 layout (location = 1) in vec3 vertexColor;
+layout (location = 2) in float vertexType;
 out vec3 shaderColor;
+uniform float glow;
+uniform float time;
 
 void main()
 {
     gl_Position = vec4((vertexPosition.x), (vertexPosition.y), (vertexPosition.z), 1.0f);
-    shaderColor = vertexColor;
+
+    if (vertexType > 0.5) {
+
+        float grad = (vertexPosition.x + 1.0) / 2.0;
+        float phase = grad + time;
+
+        shaderColor = vec3(
+            sin(phase),
+            cos(phase),
+            cos(phase)
+        );
+    } else {
+        shaderColor = vertexColor;
+    }
+
 }
