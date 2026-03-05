@@ -27,7 +27,7 @@ GLFWwindow *pWindow;
 // define a vertex array to hold our vertices
 float vertices[] =
 {
-    // x, y, z, r, g, b, s, t, ID tag, original x, y, z
+    // x, y, z, r, g, b, s, t, ID tag
 
     // super uber simplified, now made even easier to manage
 
@@ -36,132 +36,133 @@ float vertices[] =
 
     // lower part, part 1 (the large triangle nearest to bottom left of picture) (change to grape purple?)
 
-    -0.900f, -0.500f, 0.00f, 0.58f, 0.29f, 0.70f, 0.0000f, 0.2500f, 7.0f, -0.800f, -0.400f, 0.00f,
-    -0.900f, -0.900f, 0.00f, 0.58f, 0.29f, 0.70f, 0.0000f, 0.0000f, 7.0f, -0.800f, -0.800f, 0.00f,
-    0.400f, -0.900f, 0.00f, 0.58f, 0.29f, 0.70f, 0.8125f, 0.0000f, 7.0f, 0.500f, -0.800f, 0.00f,
+    -0.900f, -0.500f, 0.00f, 0.58f, 0.29f, 0.70f, 0.0000f, 0.2500f, 7.0f,
+    -0.900f, -0.900f, 0.00f, 0.58f, 0.29f, 0.70f, 0.0000f, 0.0000f, 7.0f,
+    0.400f, -0.900f, 0.00f, 0.58f, 0.29f, 0.70f, 0.8125f, 0.0000f, 7.0f,
 
     // lower part, part 2 (the small triangle nearest to sky and head, part 4) (change to dark green)
 
-    0.270f, -0.470f, 0.00f, 0.00f, 0.31f, 0.22f, 0.6063f, 0.2687f, 8.0f, 0.170f, -0.370f, 0.00f,
-    0.120f, -0.760f, 0.00f, 0.00f, 0.31f, 0.22f, 0.5125f, 0.0875f, 8.0f, 0.020f, -0.660f, 0.00f,
-    0.600f, -0.900f, 0.00f, 0.00f, 0.31f, 0.22f, 0.8125f, 0.0000f, 8.0f, 0.500f, -0.800f, 0.00f,
+    0.270f, -0.470f, 0.00f, 0.00f, 0.31f, 0.22f, 0.6063f, 0.2687f, 8.0f,
+    0.120f, -0.760f, 0.00f, 0.00f, 0.31f, 0.22f, 0.5125f, 0.0875f, 8.0f,
+    0.600f, -0.900f, 0.00f, 0.00f, 0.31f, 0.22f, 0.8125f, 0.0000f, 8.0f,
 
-    0.270f, -0.470f, 0.00f, 0.00f, 0.31f, 0.22f, 0.6063f, 0.2687f, 8.0f, 0.170f, -0.370f, 0.00f,
-    0.600f, -0.900f, 0.00f, 0.00f, 0.31f, 0.22f, 0.8125f, 0.0000f, 8.0f, 0.500f, -0.800f, 0.00f,
-    0.900f, -0.900f, 0.00f, 0.00f, 0.31f, 0.22f, 1.0000f, 0.0000f, 8.0f, 0.800f, -0.800f, 0.00f,
+    0.270f, -0.470f, 0.00f, 0.00f, 0.31f, 0.22f, 0.6063f, 0.2687f, 8.0f,
+    0.600f, -0.900f, 0.00f, 0.00f, 0.31f, 0.22f, 0.8125f, 0.0000f, 8.0f,
+    0.900f, -0.900f, 0.00f, 0.00f, 0.31f, 0.22f, 1.0000f, 0.0000f, 8.0f,
 
     // sky (change color to indigo)
 
-    0.370f, -0.170f, 0.00f, 0.29f, 0.00f, 0.51f, 0.6063f, 0.2687f, 0.0f, 0.170f, -0.370f, 0.00f,
-    1.000f, -0.600f, 0.00f, 0.29f, 0.00f, 0.51f, 1.0000f, 0.0000f, 0.0f, 0.800f, -0.800f, 0.00f,
-    0.820f, -0.120f, 0.00f, 0.29f, 0.00f, 0.51f, 0.8875f, 0.3000f, 0.0f, 0.620f, -0.320f, 0.00f,
+    0.370f, -0.170f, 0.00f, 0.29f, 0.00f, 0.51f, 0.6063f, 0.2687f, 0.0f,
+    1.000f, -0.600f, 0.00f, 0.29f, 0.00f, 0.51f, 1.0000f, 0.0000f, 0.0f,
+    0.820f, -0.120f, 0.00f, 0.29f, 0.00f, 0.51f, 0.8875f, 0.3000f, 0.0f,
 
-    0.820f, -0.120f, 0.00f, 0.29f, 0.00f, 0.51f, 0.8875f, 0.3000f, 0.0f, 0.620f, -0.320f, 0.00f,
-    0.470f, 0.290f, 0.00f, 0.29f, 0.00f, 0.51f, 0.6687f, 0.5563f, 0.0f, 0.270f, 0.090f, 0.00f,
-    0.405f, 0.090f, 0.00f, 0.29f, 0.00f, 0.51f, 0.6281f, 0.4313f, 0.0f, 0.205f, -0.110f, 0.00f,
+    0.820f, -0.120f, 0.00f, 0.29f, 0.00f, 0.51f, 0.8875f, 0.3000f, 0.0f,
+    0.470f, 0.290f, 0.00f, 0.29f, 0.00f, 0.51f, 0.6687f, 0.5563f, 0.0f,
+    0.405f, 0.090f, 0.00f, 0.29f, 0.00f, 0.51f, 0.6281f, 0.4313f, 0.0f,
 
-    0.820f, -0.120f, 0.00f, 0.29f, 0.00f, 0.51f, 0.8875f, 0.3000f, 0.0f, 0.620f, -0.320f, 0.00f,
-    0.760f, 0.620f, 0.00f, 0.29f, 0.00f, 0.51f, 0.8500f, 0.7625f, 0.0f, 0.560f, 0.420f, 0.00f,
-    0.470f, 0.290f, 0.00f, 0.29f, 0.00f, 0.51f, 0.6687f, 0.5563f, 0.0f, 0.270f, 0.090f, 0.00f,
+    0.820f, -0.120f, 0.00f, 0.29f, 0.00f, 0.51f, 0.8875f, 0.3000f, 0.0f,
+    0.760f, 0.620f, 0.00f, 0.29f, 0.00f, 0.51f, 0.8500f, 0.7625f, 0.0f,
+    0.470f, 0.290f, 0.00f, 0.29f, 0.00f, 0.51f, 0.6687f, 0.5563f, 0.0f,
 
-    0.760f, 0.620f, 0.00f, 0.29f, 0.00f, 0.51f, 0.8500f, 0.7625f, 0.0f, 0.560f, 0.420f, 0.00f,
-    1.000f, 1.000f, 0.00f, 0.29f, 0.00f, 0.51f, 1.0000f, 1.0000f, 0.0f, 0.800f, 0.800f, 0.00f,
-    0.475f, 0.610f, 0.00f, 0.29f, 0.00f, 0.51f, 0.6719f, 0.7562f, 0.0f, 0.275f, 0.410f, 0.00f,
+    0.760f, 0.620f, 0.00f, 0.29f, 0.00f, 0.51f, 0.8500f, 0.7625f, 0.0f,
+    1.000f, 1.000f, 0.00f, 0.29f, 0.00f, 0.51f, 1.0000f, 1.0000f, 0.0f,
+    0.475f, 0.610f, 0.00f, 0.29f, 0.00f, 0.51f, 0.6719f, 0.7562f, 0.0f,
 
-    1.000f, 1.000f, 0.00f, 0.29f, 0.00f, 0.51f, 1.0000f, 1.0000f, 0.0f, 0.800f, 0.800f, 0.00f,
-    0.360f, 0.910f, 0.00f, 0.29f, 0.00f, 0.51f, 0.6000f, 0.9437f, 0.0f, 0.160f, 0.710f, 0.00f,
-    0.475f, 0.610f, 0.00f, 0.29f, 0.00f, 0.51f, 0.6719f, 0.7562f, 0.0f, 0.275f, 0.410f, 0.00f,
+    1.000f, 1.000f, 0.00f, 0.29f, 0.00f, 0.51f, 1.0000f, 1.0000f, 0.0f,
+    0.360f, 0.910f, 0.00f, 0.29f, 0.00f, 0.51f, 0.6000f, 0.9437f, 0.0f,
+    0.475f, 0.610f, 0.00f, 0.29f, 0.00f, 0.51f, 0.6719f, 0.7562f, 0.0f,
 
-    1.000f, 1.000f, 0.00f, 0.29f, 0.00f, 0.51f, 1.0000f, 1.0000f, 0.0f, 0.800f, 0.800f, 0.00f,
-    0.405f, 0.965f, 0.00f, 0.29f, 0.00f, 0.51f, 0.6281f, 0.9781f, 0.0f, 0.205f, 0.765f, 0.00f,
-    0.360f, 0.910f, 0.00f, 0.29f, 0.00f, 0.51f, 0.6000f, 0.9437f, 0.0f, 0.160f, 0.710f, 0.00f,
+    1.000f, 1.000f, 0.00f, 0.29f, 0.00f, 0.51f, 1.0000f, 1.0000f, 0.0f,
+    0.405f, 0.965f, 0.00f, 0.29f, 0.00f, 0.51f, 0.6281f, 0.9781f, 0.0f,
+    0.360f, 0.910f, 0.00f, 0.29f, 0.00f, 0.51f, 0.6000f, 0.9437f, 0.0f,
 
-    1.000f, 1.000f, 0.00f, 0.29f, 0.00f, 0.51f, 1.0000f, 1.0000f, 0.0f, 0.800f, 0.800f, 0.00f,
-    0.360f, 1.000f, 0.00f, 0.29f, 0.00f, 0.51f, 0.6000f, 1.0000f, 0.0f, 0.160f, 0.800f, 0.00f,
-    0.405f, 0.965f, 0.00f, 0.29f, 0.00f, 0.51f, 0.6281f, 0.9781f, 0.0f, 0.205f, 0.765f, 0.00f,
+    1.000f, 1.000f, 0.00f, 0.29f, 0.00f, 0.51f, 1.0000f, 1.0000f, 0.0f,
+    0.360f, 1.000f, 0.00f, 0.29f, 0.00f, 0.51f, 0.6000f, 1.0000f, 0.0f,
+    0.405f, 0.965f, 0.00f, 0.29f, 0.00f, 0.51f, 0.6281f, 0.9781f, 0.0f,
 
-    1.000f, 1.000f, 0.00f, 0.29f, 0.00f, 0.51f, 1.0000f, 1.0000f, 0.0f, 0.800f, 0.800f, 0.00f,
-    0.760f, 0.620f, 0.00f, 0.29f, 0.00f, 0.51f, 0.8500f, 0.7625f, 0.0f, 0.560f, 0.420f, 0.00f,
-    0.820f, -0.120f, 0.00f, 0.29f, 0.00f, 0.51f, 0.8875f, 0.3000f, 0.0f, 0.620f, -0.320f, 0.00f,
+    1.000f, 1.000f, 0.00f, 0.29f, 0.00f, 0.51f, 1.0000f, 1.0000f, 0.0f,
+    0.760f, 0.620f, 0.00f, 0.29f, 0.00f, 0.51f, 0.8500f, 0.7625f, 0.0f,
+    0.820f, -0.120f, 0.00f, 0.29f, 0.00f, 0.51f, 0.8875f, 0.3000f, 0.0f,
 
-    1.000f, 1.000f, 0.00f, 0.29f, 0.00f, 0.51f, 1.0000f, 1.0000f, 0.0f, 0.800f, 0.800f, 0.00f,
-    0.820f, -0.120f, 0.00f, 0.29f, 0.00f, 0.51f, 0.8875f, 0.3000f, 0.0f, 0.620f, -0.320f, 0.00f,
-    1.000f, -0.600f, 0.00f, 0.29f, 0.00f, 0.51f, 1.0000f, 0.0000f, 0.0f, 0.800f, -0.800f, 0.00f,
+    1.000f, 1.000f, 0.00f, 0.29f, 0.00f, 0.51f, 1.0000f, 1.0000f, 0.0f,
+    0.820f, -0.120f, 0.00f, 0.29f, 0.00f, 0.51f, 0.8875f, 0.3000f, 0.0f,
+    1.000f, -0.600f, 0.00f, 0.29f, 0.00f, 0.51f, 1.0000f, 0.0000f, 0.0f,
 
     // head, part 1 (the part of the head nearest to the left edge) (change to red)
 
-    -0.500f, 0.800f, 0.00f, 1.00f, 0.45f, 0.46f, 0.2500f, 1.0000f, 1.0f, -0.400f, 0.800f, 0.00f,
-    -0.900f, 0.600f, 0.00f, 1.00f, 0.45f, 0.46f, 0.0000f, 0.8750f, 1.0f, -0.800f, 0.600f, 0.00f,
-    -0.900f, -0.400f, 0.00f, 1.00f, 0.45f, 0.46f, 0.0000f, 0.2500f, 1.0f, -0.800f, -0.400f, 0.00f,
+    -0.500f, 0.800f, 0.00f, 1.00f, 0.45f, 0.46f, 0.2500f, 1.0000f, 1.0f,
+    -0.900f, 0.600f, 0.00f, 1.00f, 0.45f, 0.46f, 0.0000f, 0.8750f, 1.0f,
+    -0.900f, -0.400f, 0.00f, 1.00f, 0.45f, 0.46f, 0.0000f, 0.2500f, 1.0f,
 
     // head, part 2 (the left center part of the head) (change to orange)
 
-    -0.400f, 0.800f, 0.00f, 1.00f, 0.65f, 0.00f, 0.2500f, 1.0000f, 2.0f, -0.400f, 0.800f, 0.00f,
-    -0.800f, -0.400f, 0.00f, 1.00f, 0.65f, 0.00f, 0.0000f, 0.2500f, 2.0f, -0.800f, -0.400f, 0.00f,
-    0.020f, -0.660f, 0.00f, 1.00f, 0.65f, 0.00f, 0.5125f, 0.0875f, 2.0f, 0.020f, -0.660f, 0.00f,
+    -0.400f, 0.800f, 0.00f, 1.00f, 0.65f, 0.00f, 0.2500f, 1.0000f, 2.0f,
+    -0.800f, -0.400f, 0.00f, 1.00f, 0.65f, 0.00f, 0.0000f, 0.2500f, 2.0f,
+    0.020f, -0.660f, 0.00f, 1.00f, 0.65f, 0.00f, 0.5125f, 0.0875f, 2.0f,
 
     // head, part 3 (the right center of the head) (change to yellow)
 
-    -0.400f, 0.900f, 0.00f, 1.00f, 1.00f, 0.00f, 0.2500f, 1.0000f, 3.0f, -0.400f, 0.800f, 0.00f,
-    0.020f, -0.560f, 0.00f, 1.00f, 1.00f, 0.00f, 0.5125f, 0.0875f, 3.0f, 0.020f, -0.660f, 0.00f,
-    0.080f, 0.900f, 0.00f, 1.00f, 1.00f, 0.00f, 0.5500f, 1.0000f, 3.0f, 0.080f, 0.800f, 0.00f,
+    -0.400f, 0.900f, 0.00f, 1.00f, 1.00f, 0.00f, 0.2500f, 1.0000f, 3.0f,
+    0.020f, -0.560f, 0.00f, 1.00f, 1.00f, 0.00f, 0.5125f, 0.0875f, 3.0f,
+    0.080f, 0.900f, 0.00f, 1.00f, 1.00f, 0.00f, 0.5500f, 1.0000f, 3.0f,
 
     // head, part 4 (the right side of the head nearest to sky, also has cigarette) (change to yellow-green)
 
-    0.180f, 1.000f, 0.00f, 0.65f, 0.80f, 0.20f, 0.5500f, 1.0000f, 4.0f, 0.080f, 0.800f, 0.00f,
-    0.375f, 0.610f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6719f, 0.7562f, 4.0f, 0.275f, 0.410f, 0.00f,
-    0.260f, 0.910f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6000f, 0.9437f, 4.0f, 0.160f, 0.710f, 0.00f,
+    0.180f, 1.000f, 0.00f, 0.65f, 0.80f, 0.20f, 0.5500f, 1.0000f, 4.0f,
+    0.375f, 0.610f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6719f, 0.7562f, 4.0f,
+    0.260f, 0.910f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6000f, 0.9437f, 4.0f,
 
-    0.375f, 0.610f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6719f, 0.7562f, 4.0f, 0.275f, 0.410f, 0.00f,
-    0.370f, 0.290f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6687f, 0.5563f, 4.0f, 0.270f, 0.090f, 0.00f,
-    0.660f, 0.620f, 0.00f, 0.65f, 0.80f, 0.20f, 0.8500f, 0.7625f, 4.0f, 0.560f, 0.420f, 0.00f,
+    0.375f, 0.610f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6719f, 0.7562f, 4.0f,
+    0.370f, 0.290f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6687f, 0.5563f, 4.0f,
+    0.660f, 0.620f, 0.00f, 0.65f, 0.80f, 0.20f, 0.8500f, 0.7625f, 4.0f,
 
-    0.180f, 1.000f, 0.00f, 0.65f, 0.80f, 0.20f, 0.5500f, 1.0000f, 4.0f, 0.080f, 0.800f, 0.00f,
-    0.370f, 0.290f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6687f, 0.5563f, 4.0f, 0.270f, 0.090f, 0.00f,
-    0.260f, 0.910f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6000f, 0.9437f, 4.0f, 0.160f, 0.710f, 0.00f,
+    0.180f, 1.000f, 0.00f, 0.65f, 0.80f, 0.20f, 0.5500f, 1.0000f, 4.0f,
+    0.370f, 0.290f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6687f, 0.5563f, 4.0f,
+    0.260f, 0.910f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6000f, 0.9437f, 4.0f,
 
-    0.260f, 0.910f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6000f, 0.9437f, 4.0f, 0.160f, 0.710f, 0.00f,
-    0.370f, 0.290f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6687f, 0.5563f, 4.0f, 0.270f, 0.090f, 0.00f,
-    0.375f, 0.610f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6719f, 0.7562f, 4.0f, 0.275f, 0.410f, 0.00f,
+    0.260f, 0.910f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6000f, 0.9437f, 4.0f,
+    0.370f, 0.290f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6687f, 0.5563f, 4.0f,
+    0.375f, 0.610f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6719f, 0.7562f, 4.0f,
 
-    0.180f, 1.000f, 0.00f, 0.65f, 0.80f, 0.20f, 0.5500f, 1.0000f, 4.0f, 0.080f, 0.800f, 0.00f,
-    0.120f, -0.460f, 0.00f, 0.65f, 0.80f, 0.20f, 0.5125f, 0.0875f, 4.0f, 0.020f, -0.660f, 0.00f,
-    0.370f, 0.290f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6687f, 0.5563f, 4.0f, 0.270f, 0.090f, 0.00f,
+    0.180f, 1.000f, 0.00f, 0.65f, 0.80f, 0.20f, 0.5500f, 1.0000f, 4.0f,
+    0.120f, -0.460f, 0.00f, 0.65f, 0.80f, 0.20f, 0.5125f, 0.0875f, 4.0f,
+    0.370f, 0.290f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6687f, 0.5563f, 4.0f,
 
-    0.370f, 0.290f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6687f, 0.5563f, 4.0f, 0.270f, 0.090f, 0.00f,
-    0.120f, -0.460f, 0.00f, 0.65f, 0.80f, 0.20f, 0.5125f, 0.0875f, 4.0f, 0.020f, -0.660f, 0.00f,
-    0.270f, -0.170f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6063f, 0.2687f, 4.0f, 0.170f, -0.370f, 0.00f,
+    0.370f, 0.290f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6687f, 0.5563f, 4.0f,
+    0.120f, -0.460f, 0.00f, 0.65f, 0.80f, 0.20f, 0.5125f, 0.0875f, 4.0f,
+    0.270f, -0.170f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6063f, 0.2687f, 4.0f,
 
-    0.305f, 0.090f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6281f, 0.4313f, 4.0f, 0.205f, -0.110f, 0.00f,
-    0.120f, -0.460f, 0.00f, 0.65f, 0.80f, 0.20f, 0.5125f, 0.0875f, 4.0f, 0.020f, -0.660f, 0.00f,
-    0.270f, -0.170f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6063f, 0.2687f, 4.0f, 0.170f, -0.370f, 0.00f,
+    0.305f, 0.090f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6281f, 0.4313f, 4.0f,
+    0.120f, -0.460f, 0.00f, 0.65f, 0.80f, 0.20f, 0.5125f, 0.0875f, 4.0f,
+    0.270f, -0.170f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6063f, 0.2687f, 4.0f,
 
-    0.305f, 0.090f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6281f, 0.4313f, 4.0f, 0.205f, -0.110f, 0.00f,
-    0.270f, -0.170f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6063f, 0.2687f, 4.0f, 0.170f, -0.370f, 0.00f,
-    0.720f, -0.120f, 0.00f, 0.65f, 0.80f, 0.20f, 0.8875f, 0.3000f, 4.0f, 0.620f, -0.320f, 0.00f,
+    0.305f, 0.090f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6281f, 0.4313f, 4.0f,
+    0.270f, -0.170f, 0.00f, 0.65f, 0.80f, 0.20f, 0.6063f, 0.2687f, 4.0f,
+    0.720f, -0.120f, 0.00f, 0.65f, 0.80f, 0.20f, 0.8875f, 0.3000f, 4.0f,
 
     // large hat segment (the one nearest to upper left of image) (change to magenta)
 
-    -0.950f, 0.950f, 0.00f, 1.00f, 0.00f, 1.00f, 0.0000f, 1.0000f, 5.0f, -0.800f, 0.800f, 0.00f,
-    -0.950f, 0.750f, 0.00f, 1.00f, 0.00f, 1.00f, 0.0000f, 0.8750f, 5.0f, -0.800f, 0.600f, 0.00f,
-    -0.550f, 0.950f, 0.00f, 1.00f, 0.00f, 1.00f, 0.2500f, 1.0000f, 5.0f, -0.400f, 0.800f, 0.00f,
+    -0.950f, 0.950f, 0.00f, 1.00f, 0.00f, 1.00f, 0.0000f, 1.0000f, 5.0f,
+    -0.950f, 0.750f, 0.00f, 1.00f, 0.00f, 1.00f, 0.0000f, 0.8750f, 5.0f,
+    -0.550f, 0.950f, 0.00f, 1.00f, 0.00f, 1.00f, 0.2500f, 1.0000f, 5.0f,
 
     // small hat segment (the small one nearest to head, part 4 and sky) (change to cyan)
 
-    0.230f, 1.000f, 0.00f, 0.00f, 1.00f, 1.00f, 0.5500f, 1.0000f, 6.0f, 0.080f, 0.800f, 0.00f,
-    0.310f, 0.910f, 0.00f, 0.00f, 1.00f, 1.00f, 0.6000f, 0.9437f, 6.0f, 0.160f, 0.710f, 0.00f,
-    0.310f, 1.000f, 0.00f, 0.00f, 1.00f, 1.00f, 0.6000f, 1.0000f, 6.0f, 0.160f, 0.800f, 0.00f,
+    0.230f, 1.000f, 0.00f, 0.00f, 1.00f, 1.00f, 0.5500f, 1.0000f, 6.0f,
+    0.310f, 0.910f, 0.00f, 0.00f, 1.00f, 1.00f, 0.6000f, 0.9437f, 6.0f,
+    0.310f, 1.000f, 0.00f, 0.00f, 1.00f, 1.00f, 0.6000f, 1.0000f, 6.0f,
 
-    0.310f, 1.000f, 0.00f, 0.00f, 1.00f, 1.00f, 0.6000f, 1.0000f, 6.0f, 0.160f, 0.800f, 0.00f,
-    0.310f, 0.910f, 0.00f, 0.00f, 1.00f, 1.00f, 0.6000f, 0.9437f, 6.0f, 0.160f, 0.710f, 0.00f,
-    0.355f, 0.965f, 0.00f, 0.00f, 1.00f, 1.00f, 0.6281f, 0.9781f, 6.0f, 0.205f, 0.765f, 0.00f,
+    0.310f, 1.000f, 0.00f, 0.00f, 1.00f, 1.00f, 0.6000f, 1.0000f, 6.0f,
+    0.310f, 0.910f, 0.00f, 0.00f, 1.00f, 1.00f, 0.6000f, 0.9437f, 6.0f,
+    0.355f, 0.965f, 0.00f, 0.00f, 1.00f, 1.00f, 0.6281f, 0.9781f, 6.0f,
 };
 
 // define OpenGL object IDs to represent the vertex array and the shader program in the GPU
 GLuint vao;         // vertex array object (stores the render state for our vertex array)
 GLuint vbo;         // vertex buffer object (reserves GPU memory for our vertex array)
 GLuint shader;      // combined vertex and fragment shader
-GLuint texture;
+GLuint texture1;
+GLuint texture2;
 
 // called by the main function to do initial setup, such as uploading vertex
 // arrays, shader programs, etc.; returns true if successful, false otherwise
@@ -184,11 +185,10 @@ bool setup()
     // - ... its values will NOT be normalized (GL_FALSE)
     // - ... the stride length is the number of bytes of all 3 floats of each vertex (hence, 3 * sizeof(float))
     // - ... and we start at the beginning of the array (hence, (void*) 0)
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void*) 0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void*) (3 * sizeof(float)));
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void*) (6 * sizeof(float)));
-    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void*) (8 * sizeof(float)));
-    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void*) (9 * sizeof(float)));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*) 0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*) (3 * sizeof(float)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*) (6 * sizeof(float)));
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*) (8 * sizeof(float)));
 
     // enable the newly-created layout location 0;
     // this shall be used by our vertex shader to read the vertex's x, y, and z
@@ -205,13 +205,16 @@ bool setup()
     // enable the newly-created layout location 3;
     // this shsall be used by our vertex shader to read the vertex's ID tag
     glEnableVertexAttribArray(3);
-    glEnableVertexAttribArray(4);
 
     // important: if you have more vertex arrays to draw, make sure you separately define them
     // with unique VAO and VBO IDs, and follow the same process above to upload them to the GPU
 
-    texture = gdevLoadTexture("main.jpg", GL_REPEAT, true, true);
-    if (! texture)
+    texture1 = gdevLoadTexture("main.jpg", GL_REPEAT, true, true);
+    if (! texture1)
+        return false;
+
+    texture2 = gdevLoadTexture("sectex.jpg", GL_REPEAT, true, true);
+    if (! texture2)
         return false;
 
     // load our shader program
@@ -238,48 +241,40 @@ void render()
     // using our shader program...
     glUseProgram(shader);
 
+    // bind textures
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glBindTexture(GL_TEXTURE_2D, texture1);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, texture2);
+
+    // ... draw our triangles
+    glBindVertexArray(vao);
+
+    glUniform1i(glGetUniformLocation(shader, "shaderTexture"), 0);
+    glUniform1i(glGetUniformLocation(shader, "shaderTexture2"), 1);
 
     // compute a palette rotation offset so each group cycles colors but remain unique
     const int paletteSize = 9;
     int offset = ((int)glfwGetTime()) % paletteSize; // integer shift that steps each second
-    GLint offLoc = glGetUniformLocation(shader, "offset");
+    GLint offLoc = glGetUniformLocation(shader, "uOffset");
     if (offLoc != -1)
         glUniform1i(offLoc, offset);
 
     // upload continuous time and speed for smooth interpolation
-    float time = (float)glfwGetTime();
-    GLint timeLoc = glGetUniformLocation(shader, "time");
+    float timeF = (float)glfwGetTime();
+    GLint timeLoc = glGetUniformLocation(shader, "uTime");
     if (timeLoc != -1)
-        glUniform1f(timeLoc, time);
-    GLint speedLoc = glGetUniformLocation(shader, "speed");
+        glUniform1f(timeLoc, timeF);
+    GLint speedLoc = glGetUniformLocation(shader, "uSpeed");
     if (speedLoc != -1)
         glUniform1f(speedLoc, 0.35f); // tweak this value to change transition speed
-    GLint pivotLoc = glGetUniformLocation(shader, "pivotPoints");
-    if (pivotLoc != -1)
-        glUniform2f(pivotLoc, 0.0f, 0.0f);
-
-    float formUpTime = 6.0f;
-    float completionTime = 2.0f;
-    float stopTime = 2.0f;
-    float pieceUpAmt = 0.0f;
-
-    float animationTime = fmod(glfwGetTime(), formUpTime);
-
-    if (animationTime < completionTime) pieceUpAmt = animationTime / completionTime;
-
-    else if (animationTime < completionTime + stopTime) pieceUpAmt = 1.0;
-
-    else pieceUpAmt = 1.0 - ((animationTime - (completionTime + stopTime)) / completionTime);
-
-    GLint pieceLoc = glGetUniformLocation(shader, "pieceUpAmt");
-    if (pieceLoc != -1)
-        glUniform1f(pieceLoc, pieceUpAmt);
-        
-    // ... draw our triangles
-    glBindVertexArray(vao);
-
+    GLint scrollSpeedLoc = glGetUniformLocation(shader, "uScrollSpeed");
+    if (scrollSpeedLoc != -1)
+        glUniform1f(scrollSpeedLoc, 0.35f);
+    GLint directionLoc = glGetUniformLocation(shader, "uDirection");
+    if (directionLoc != -1)
+        glUniform2f(directionLoc, 0.0f, 0.5f);
     glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices) / (9 * sizeof(float)));
 }
 
