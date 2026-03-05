@@ -186,7 +186,7 @@ bool setup()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*) 0);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*) (3 * sizeof(float)));
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*) (6 * sizeof(float)));
-    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*) (9 * sizeof(float)));
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*) (8 * sizeof(float)));
 
     // enable the newly-created layout location 0;
     // this shall be used by our vertex shader to read the vertex's x, y, and z
@@ -226,8 +226,13 @@ void render()
     glClearColor(0.0f, 0.0f, 1.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    float time = (float)(glfwGetTime());
+
     // using our shader program...
     glUseProgram(shader);
+
+    // ... set the uniform variables of the shader...
+    glUniform1f(glGetUniformLocation(shader, "time"), time);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
