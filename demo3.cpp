@@ -16,6 +16,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <gdev.h>
+#include <cmath>
 
 // change this to your desired window attributes
 #define WINDOW_WIDTH  748
@@ -186,7 +187,7 @@ bool setup()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*) 0);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*) (3 * sizeof(float)));
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*) (6 * sizeof(float)));
-    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*) (9 * sizeof(float)));
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*) (8 * sizeof(float)));
 
     // enable the newly-created layout location 0;
     // this shall be used by our vertex shader to read the vertex's x, y, and z
@@ -216,6 +217,12 @@ bool setup()
     if (! shader)
         return false;
 
+    // ensure the shader sampler is bound to texture unit 0
+    glUseProgram(shader);
+    GLint texLoc = glGetUniformLocation(shader, "shaderTexture");
+    if (texLoc != -1)
+        glUniform1i(texLoc, 0);
+
     return true;
 }
 
@@ -234,7 +241,22 @@ void render()
 
     // ... draw our triangles
     glBindVertexArray(vao);
-    glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices) / (8 * sizeof(float)));
+    // compute a palette rotation offset so each group cycles colors but remain unique
+    const int paletteSize = 9;
+    int offset = ((int)glfwGetTime()) % paletteSize; // integer shift that steps each second
+    GLint offLoc = glGetUniformLocation(shader, "uOffset");
+    if (offLoc != -1)
+        glUniform1i(offLoc, offset);
+
+    // upload continuous time and speed for smooth interpolation
+    float timeF = (float)glfwGetTime();
+    GLint timeLoc = glGetUniformLocation(shader, "uTime");
+    if (timeLoc != -1)
+        glUniform1f(timeLoc, timeF);
+    GLint speedLoc = glGetUniformLocation(shader, "uSpeed");
+    if (speedLoc != -1)
+        glUniform1f(speedLoc, 0.35f); // tweak this value to change transition speed
+    glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices) / (9 * sizeof(float)));
 }
 
 /*****************************************************************************/

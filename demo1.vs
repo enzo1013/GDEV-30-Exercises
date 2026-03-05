@@ -13,6 +13,7 @@ layout (location = 2) in vec2 vertexTexCoord;
 layout (location = 3) in float vertexType;
 out vec3 shaderColor;
 out vec2 shaderTexCoord;
+out float shaderType;
 
 void main()
 {
@@ -20,5 +21,6 @@ void main()
 
         shaderColor = vertexColor;
         shaderTexCoord = vertexTexCoord;
+        shaderType = vertexType;
 
 }
