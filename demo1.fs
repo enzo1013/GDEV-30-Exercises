@@ -11,9 +11,11 @@ in vec3 shaderColor;
 in vec2 shaderTexCoord;
 in float shaderType;
 uniform sampler2D shaderTexture;
-uniform int offset; // integer offset to shift starting palette index
-uniform float time; // time in seconds
-uniform float speed; // speed multiplier for transitions
+uniform sampler2D shaderTexture2;
+uniform int offset;
+uniform float time;
+uniform float speed;
+uniform vec2 scrollDirection;
 out vec4 fragmentColor;
 
 const int PALETTE_SIZE = 9;
@@ -30,13 +32,10 @@ const vec3 palette[PALETTE_SIZE] = vec3[](
 );
 
 void main() {
-    // per-group base index (shifted by integer offset)
     int id = int(round(shaderType));
     float base = float(id + offset);
 
-    // continuous rotating position along the palette
     float pos = base + time * speed;
-    // wrap within palette size
     float wrapped = mod(pos, float(PALETTE_SIZE));
 
     int a = int(floor(wrapped));
@@ -47,5 +46,8 @@ void main() {
     vec3 cb = palette[b];
     vec3 color = mix(ca, cb, f);
 
-    fragmentColor = vec4(color, 1.0) * texture(shaderTexture, shaderTexCoord);
+    vec4 baseTex = texture(shaderTexture, shaderTexCoord);
+    vec4 scrollTex = texture(shaderTexture2, (shaderTexCoord + (time * speed * scrollDirection)));
+
+    fragmentColor = vec4(color, 1.0) * baseTex * scrollTex;
 }

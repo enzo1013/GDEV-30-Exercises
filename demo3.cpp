@@ -161,7 +161,8 @@ float vertices[] =
 GLuint vao;         // vertex array object (stores the render state for our vertex array)
 GLuint vbo;         // vertex buffer object (reserves GPU memory for our vertex array)
 GLuint shader;      // combined vertex and fragment shader
-GLuint texture;
+GLuint texture1;
+GLuint texture2;
 
 // called by the main function to do initial setup, such as uploading vertex
 // arrays, shader programs, etc.; returns true if successful, false otherwise
@@ -210,8 +211,12 @@ bool setup()
     // important: if you have more vertex arrays to draw, make sure you separately define them
     // with unique VAO and VBO IDs, and follow the same process above to upload them to the GPU
 
-    texture = gdevLoadTexture("main.jpg", GL_REPEAT, true, true);
-    if (! texture)
+    texture1 = gdevLoadTexture("main.jpg", GL_REPEAT, true, true);
+    if (! texture1)
+        return false;
+
+    texture2 = gdevLoadTexture("sectex.jpg", GL_REPEAT, true, true);
+    if (! texture2)
         return false;
 
     // load our shader program
@@ -239,26 +244,37 @@ void render()
     glUseProgram(shader);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glBindTexture(GL_TEXTURE_2D, texture1);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, texture2);
+
+    glUniform1i(glGetUniformLocation(shader, "shaderTexture"), 0);
+    glUniform1i(glGetUniformLocation(shader, "shaderTexture2"), 1);
 
     // compute a palette rotation offset so each group cycles colors but remain unique
     const int paletteSize = 9;
-    int offset = ((int)glfwGetTime()) % paletteSize; // integer shift that steps each second
+    int offset = ((int)glfwGetTime()) % paletteSize;
     GLint offLoc = glGetUniformLocation(shader, "offset");
     if (offLoc != -1)
         glUniform1i(offLoc, offset);
 
-    // upload continuous time and speed for smooth interpolation
     float time = (float)glfwGetTime();
     GLint timeLoc = glGetUniformLocation(shader, "time");
     if (timeLoc != -1)
         glUniform1f(timeLoc, time);
+
     GLint speedLoc = glGetUniformLocation(shader, "speed");
     if (speedLoc != -1)
-        glUniform1f(speedLoc, 0.35f); // tweak this value to change transition speed
+        glUniform1f(speedLoc, 0.35f);
+
     GLint pivotLoc = glGetUniformLocation(shader, "pivotPoints");
     if (pivotLoc != -1)
         glUniform2f(pivotLoc, 0.0f, 0.0f);
+
+    GLint directionLoc = glGetUniformLocation(shader, "scrollDirection");
+    if (directionLoc != -1)
+        glUniform2f(directionLoc, 0.0f, 0.5f);
 
     float formUpTime = 6.0f;
     float completionTime = 2.0f;
