@@ -239,23 +239,28 @@ void render()
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
 
-    // ... draw our triangles
-    glBindVertexArray(vao);
     // compute a palette rotation offset so each group cycles colors but remain unique
     const int paletteSize = 9;
     int offset = ((int)glfwGetTime()) % paletteSize; // integer shift that steps each second
-    GLint offLoc = glGetUniformLocation(shader, "uOffset");
+    GLint offLoc = glGetUniformLocation(shader, "offset");
     if (offLoc != -1)
         glUniform1i(offLoc, offset);
 
     // upload continuous time and speed for smooth interpolation
-    float timeF = (float)glfwGetTime();
-    GLint timeLoc = glGetUniformLocation(shader, "uTime");
+    float time = (float)glfwGetTime();
+    GLint timeLoc = glGetUniformLocation(shader, "time");
     if (timeLoc != -1)
-        glUniform1f(timeLoc, timeF);
-    GLint speedLoc = glGetUniformLocation(shader, "uSpeed");
+        glUniform1f(timeLoc, time);
+    GLint speedLoc = glGetUniformLocation(shader, "speed");
     if (speedLoc != -1)
         glUniform1f(speedLoc, 0.35f); // tweak this value to change transition speed
+    GLint pivotLoc = glGetUniformLocation(shader, "pivotPoints");
+    if (pivotLoc != -1)
+        glUniform2f(pivotLoc, 0.0f, 0.0f);
+
+    // ... draw our triangles
+    glBindVertexArray(vao);
+
     glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices) / (9 * sizeof(float)));
 }
 

@@ -11,9 +11,9 @@ in vec3 shaderColor;
 in vec2 shaderTexCoord;
 in float shaderType;
 uniform sampler2D shaderTexture;
-uniform int uOffset; // integer offset to shift starting palette index
-uniform float uTime; // time in seconds
-uniform float uSpeed; // speed multiplier for transitions
+uniform int offset; // integer offset to shift starting palette index
+uniform float time; // time in seconds
+uniform float speed; // speed multiplier for transitions
 out vec4 fragmentColor;
 
 const int PALETTE_SIZE = 9;
@@ -32,10 +32,10 @@ const vec3 palette[PALETTE_SIZE] = vec3[](
 void main() {
     // per-group base index (shifted by integer offset)
     int id = int(round(shaderType));
-    float base = float(id + uOffset);
+    float base = float(id + offset);
 
     // continuous rotating position along the palette
-    float pos = base + uTime * uSpeed;
+    float pos = base + time * speed;
     // wrap within palette size
     float wrapped = mod(pos, float(PALETTE_SIZE));
 
