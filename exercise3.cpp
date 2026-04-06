@@ -649,14 +649,13 @@ bool setup()
 void render()
 {
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
 
     // Projection matrix
     glm::mat4 projection = glm::perspective(glm::radians(60.0f), (float) WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
 
     // View matrix using lookAt
     glm::mat4 view = glm::lookAt(
-        glm::vec3(0.0f, 0.0f, 10.0f),  // eye
+        glm::vec3(0.0f, 0.0f, 0.25f),  // eye
         glm::vec3(0.0f, 0.0f, 0.0f),   // center
         glm::vec3(0.0f, 1.0f, 0.0f)    // up
     );
