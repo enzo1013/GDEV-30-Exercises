@@ -23,6 +23,13 @@
 #define WINDOW_TITLE  "Greek Facade"
 GLFWwindow *pWindow;
 
+// values for the lookAt matrix
+glm::vec3 cameraEye = glm::vec3(2.0f, 5.0f, -2.0f);  // eye
+glm::vec3 cameraCenter = glm::normalize(glm::vec3(0.0f, 0.0f, -5.0f) - cameraEye);   // center
+glm::vec3 cameraGlobUp = glm::vec3(0.0f, 1.0f, 0.0f);     // up
+
+float cameraSpeed = 0.5;
+
 // define a vertex array to hold our vertices
 float vertices[] =
 {
@@ -446,11 +453,11 @@ void render()
     // Projection matrix
     glm::mat4 projection = glm::perspective(glm::radians(60.0f), (float) WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
 
-    // View matrix using lookAt
+    // viewed at using this matrix
     glm::mat4 view = glm::lookAt(
-        glm::vec3(0.0f, 0.0f, 0.25f),  // eye
-        glm::vec3(0.0f, 0.0f, 0.0f),   // center
-        glm::vec3(0.0f, 1.0f, 0.0f)    // up
+        cameraEye,
+        cameraEye + cameraCenter,
+        cameraGlobUp
     );
 
     // clear the whole frame
@@ -463,15 +470,15 @@ void render()
     // Bind VAO
     glBindVertexArray(vao);
 
-    // Draw 3 copies
+    // Draw three copies...
     for(int i = 0; i < 3; i++){
         glm::mat4 model = glm::mat4(1.0f);
 
-        // Translation
+        // then translate two of them...
         float tx[3] = {-3.0f, 0.0f, 3.0f};
         model = glm::translate(model, glm::vec3(tx[i], 0.0f, -5.0f));
 
-        // Rotation
+        // then make them rotate...
         float time = (float)glfwGetTime();
         glm::vec3 axis;
         if(i == 0) axis = glm::vec3(1.0f, 0.0f, 0.0f); // X-axis
@@ -479,7 +486,7 @@ void render()
         else axis = glm::vec3(0.0f, 0.0f, 1.0f); // Z-axis
         model = glm::rotate(model, time * 1.0f, axis);
 
-        // Scaling
+        // and scale them
         float scales[3] = {1.0f, 0.7f, 1.3f};
         model = glm::scale(model, glm::vec3(scales[i], scales[i], scales[i]));
 
@@ -492,14 +499,27 @@ void render()
     }
 }
 
-/*****************************************************************************/
-
 // handler called by GLFW when there is a keyboard event
 void handleKeys(GLFWwindow* pWindow, int key, int scancode, int action, int mode)
 {
     // pressing Esc closes the window
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(pWindow, GL_TRUE);
+    
+    // https://www.glfw.org/docs/latest/group__keys.html
+
+    // pressing W will move the camera up
+    if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_REPEAT))
+        cameraEye += cameraSpeed * cameraCenter;
+    // pressing S will move the camera down
+    if (key == GLFW_KEY_S && (action == GLFW_PRESS || action == GLFW_REPEAT))
+        cameraEye -= cameraSpeed * cameraCenter;
+    // pressing A will move the camera left
+    if (key == GLFW_KEY_A && (action == GLFW_PRESS || action == GLFW_REPEAT))
+        cameraEye -= glm::normalize(glm::cross(cameraCenter, cameraGlobUp)) * cameraSpeed;
+    // pressing D will move the camera right
+    if (key == GLFW_KEY_D && (action == GLFW_PRESS || action == GLFW_REPEAT))
+        cameraEye += glm::normalize(glm::cross(cameraCenter, cameraGlobUp)) * cameraSpeed;
 }
 
 // handler called by GLFW when the window is resized
