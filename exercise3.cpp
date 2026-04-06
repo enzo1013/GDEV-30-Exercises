@@ -651,12 +651,16 @@ void render()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
 
-    glm::mat4 matrix;
-    matrix = glm::perspective(glm::radians(60.0f), (float) WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
-    // matrix = glm::translate(matrix, glm::vec3(0.0f, 0.0f, -5.0f));
-    // matrix = glm::rotate(matrix, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    // matrix = glm::scale(matrix, glm::vec3(5.0f, 5.0f, 1.0f));
-    glUniformMatrix4fv(glGetUniformLocation(shader, "matrix"), 1, GL_FALSE, glm::value_ptr(matrix));
+    // Projection matrix
+    glm::mat4 projection = glm::perspective(glm::radians(60.0f), (float) WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
+
+    // View matrix using lookAt
+    glm::mat4 view = glm::lookAt(
+        glm::vec3(0.0f, 0.0f, 10.0f),  // eye
+        glm::vec3(0.0f, 0.0f, 0.0f),   // center
+        glm::vec3(0.0f, 1.0f, 0.0f)    // up
+    );
+
     // clear the whole frame
     glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -664,9 +668,36 @@ void render()
     // using our shader program...
     glUseProgram(shader);
 
-    // ... draw our triangles
+    // Bind VAO
     glBindVertexArray(vao);
-    glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices) / (3 * sizeof(float)));
+
+    // Draw 3 copies
+    for(int i = 0; i < 3; i++){
+        glm::mat4 model = glm::mat4(1.0f);
+
+        // Translation
+        float tx[3] = {-3.0f, 0.0f, 3.0f};
+        model = glm::translate(model, glm::vec3(tx[i], 0.0f, -5.0f));
+
+        // Rotation
+        float time = (float)glfwGetTime();
+        glm::vec3 axis;
+        if(i == 0) axis = glm::vec3(1.0f, 0.0f, 0.0f); // X-axis
+        else if(i == 1) axis = glm::vec3(0.0f, 1.0f, 0.0f); // Y-axis
+        else axis = glm::vec3(0.0f, 0.0f, 1.0f); // Z-axis
+        model = glm::rotate(model, time * 1.0f, axis);
+
+        // Scaling
+        float scales[3] = {1.0f, 0.7f, 1.3f};
+        model = glm::scale(model, glm::vec3(scales[i], scales[i], scales[i]));
+
+        // MVP matrix
+        glm::mat4 mvp = projection * view * model;
+        glUniformMatrix4fv(glGetUniformLocation(shader, "matrix"), 1, GL_FALSE, glm::value_ptr(mvp));
+
+        // Draw the model
+        glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices) / (6 * sizeof(float)));
+    }
 }
 
 /*****************************************************************************/
