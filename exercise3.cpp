@@ -11,6 +11,14 @@
  * Happy hacking! - eric
  *****************************************************************************/
 
+/*****************************************************************************
+ * Keyboard controls for camera:
+ * W moves the camera forward.
+ * S moves the camera back.
+ * A moves the camera left.
+ * D moves the camera right.
+ *****************************************************************************/
+
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
