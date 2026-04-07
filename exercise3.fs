@@ -8,9 +8,11 @@
 #version 330 core
 
 in vec3 shaderColor;
+in vec2 texCoord;
+uniform sampler2D texture1;
 out vec4 fragmentColor;
 
 void main()
 {
-    fragmentColor = vec4(shaderColor, 1.0f);
+    fragmentColor = texture(texture1, texCoord);
 }
