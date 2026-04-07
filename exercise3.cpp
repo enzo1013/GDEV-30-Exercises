@@ -17,6 +17,10 @@
  * S moves the camera back.
  * A moves the camera left.
  * D moves the camera right.
+ * Q rotates the camera to the left.
+ * E rotates the camera to the right.
+ * 1 or 2 rotates the camera down.
+ * 3 or 4 rotates the camera up.
  *****************************************************************************/
 
 #include <iostream>
@@ -31,12 +35,21 @@
 #define WINDOW_TITLE  "Greek Facade"
 GLFWwindow *pWindow;
 
+// an attempt of rotating the camera
+float cameraYaw = -110.0f;
+float cameraPitch = -54.0f;
+float cameraRotate = 2.0f;
+
 // values for the lookAt matrix
 glm::vec3 cameraEye = glm::vec3(2.0f, 5.0f, -2.0f);  // eye
-glm::vec3 cameraCenter = glm::normalize(glm::vec3(0.0f, 0.0f, -5.0f) - cameraEye);   // center
+glm::vec3 cameraCenter = glm::normalize(glm::vec3(
+        cos(glm::radians(cameraYaw)) * cos(glm::radians(cameraPitch)),
+        sin(glm::radians(cameraPitch)),
+        sin(glm::radians(cameraYaw)) * cos(glm::radians(cameraPitch))
+        ));   // center
 glm::vec3 cameraGlobUp = glm::vec3(0.0f, 1.0f, 0.0f);     // up
 
-float cameraSpeed = 0.5;
+float cameraSpeed = 0.5f;
 
 // define a vertex array to hold our vertices
 float vertices[] =
@@ -528,6 +541,46 @@ void handleKeys(GLFWwindow* pWindow, int key, int scancode, int action, int mode
     // pressing D will move the camera right
     if (key == GLFW_KEY_D && (action == GLFW_PRESS || action == GLFW_REPEAT))
         cameraEye += glm::normalize(glm::cross(cameraCenter, cameraGlobUp)) * cameraSpeed;
+
+    // pressing Q will rotate the camera to the left
+    if (key == GLFW_KEY_Q && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
+        cameraYaw -= cameraRotate;
+        cameraCenter = glm::normalize(glm::vec3(
+        cos(glm::radians(cameraYaw)) * cos(glm::radians(cameraPitch)),
+        sin(glm::radians(cameraPitch)),
+        sin(glm::radians(cameraYaw)) * cos(glm::radians(cameraPitch))
+        ));
+    }
+
+    // pressing E will rotate the camera to the right
+    if (key == GLFW_KEY_E && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
+        cameraYaw += cameraRotate;
+        cameraCenter = glm::normalize(glm::vec3(
+        cos(glm::radians(cameraYaw)) * cos(glm::radians(cameraPitch)),
+        sin(glm::radians(cameraPitch)),
+        sin(glm::radians(cameraYaw)) * cos(glm::radians(cameraPitch))
+        ));
+    }
+
+    // pressing 1 or 2 will rotate the camera down
+    if ((key == GLFW_KEY_1 || key == GLFW_KEY_2) && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
+        cameraPitch -= cameraRotate;
+        cameraCenter = glm::normalize(glm::vec3(
+        cos(glm::radians(cameraYaw)) * cos(glm::radians(cameraPitch)),
+        sin(glm::radians(cameraPitch)),
+        sin(glm::radians(cameraYaw)) * cos(glm::radians(cameraPitch))
+        ));
+    }
+
+    // pressing 3 or 4 will rotate the camera up
+    if ((key == GLFW_KEY_3 || key == GLFW_KEY_4) && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
+        cameraPitch += cameraRotate;
+        cameraCenter = glm::normalize(glm::vec3(
+        cos(glm::radians(cameraYaw)) * cos(glm::radians(cameraPitch)),
+        sin(glm::radians(cameraPitch)),
+        sin(glm::radians(cameraYaw)) * cos(glm::radians(cameraPitch))
+        ));
+    }
 }
 
 // handler called by GLFW when the window is resized
