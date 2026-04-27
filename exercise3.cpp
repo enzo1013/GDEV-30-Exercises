@@ -383,7 +383,7 @@ float vertices[] =
     -0.75f, -0.25f, -1.00f, 0.50f, 0.50f, 1.00f, 0.00f, 0.00f, -1.00f, 0.00f,
 
     // edges of base bottom
-    
+
     -0.75f, -0.25f, -0.75f, 0.50f, 0.00f, 1.00f, 0.00f, 1.00f, 0.00f, 1.00f,
     0.75f, -0.25f, -1.00f, 0.50f, 0.00f, 1.00f, 0.00f, 1.00f, 0.00f, 1.00f,
     -0.75f, -0.25f, -1.00f, 0.50f, 0.00f, 1.00f, 0.00f, 1.00f, 0.00f, 1.00f,
@@ -445,10 +445,10 @@ bool setup()
     // - ... its values will NOT be normalized (GL_FALSE)
     // - ... the stride length is the number of bytes of all 3 floats of each vertex (hence, 3 * sizeof(float))
     // - ... and we start at the beginning of the array (hence, (void*) 0)
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*) 0);                      // vertices
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*) (3 * sizeof(float)));    // rgb
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*) (6 * sizeof(float)));    // normals
-    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*) (9 * sizeof(float)));    // orientation
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*) 0);                      // vertices
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*) (3 * sizeof(float)));    // rgb
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*) (6 * sizeof(float)));    // normals
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 10 * sizeof(float), (void*) (9 * sizeof(float)));    // orientation
 
     // enable the newly-created layout location 0;
     // this shall be used by our vertex shader to read the vertex's x, y, and z
