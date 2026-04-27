@@ -50,14 +50,16 @@ float cameraSpeed = 0.5f;
 // define a vertex array to hold our vertices
 float vertices[] =
 {
-    // position (x, y, z), colours (r, g, b), orientation
+    // position (x, y, z), colours (r, g, b), normals (x, y, z), orientation
+
+    // normal calculation = norm((B - A) cross (C - A))
 
     // pillar 1
 
     // segment 1, rear
-    -0.50f, -0.2f, -1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-    -0.40f, 0.2f, -1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-    -0.40f, -0.2f, -1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+    -0.50f, -0.2f, -1.0f, 1.0f, 1.0f, 1.0f, 0.0f, // A
+    -0.40f, 0.2f, -1.0f, 1.0f, 1.0f, 1.0f, 0.0f, // B
+    -0.40f, -0.2f, -1.0f, 1.0f, 1.0f, 1.0f, 0.0f, // C
 
     -0.50f, -0.2f, -1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
     -0.50f, 0.2f, -1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
@@ -443,15 +445,17 @@ bool setup()
     // - ... its values will NOT be normalized (GL_FALSE)
     // - ... the stride length is the number of bytes of all 3 floats of each vertex (hence, 3 * sizeof(float))
     // - ... and we start at the beginning of the array (hence, (void*) 0)
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*) 0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*) (3 * sizeof(float)));
-    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*) (6 * sizeof(float)));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*) 0);                      // vertices
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*) (3 * sizeof(float)));    // rgb
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*) (6 * sizeof(float)));    // normals
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*) (9 * sizeof(float)));    // orientation
 
     // enable the newly-created layout location 0;
     // this shall be used by our vertex shader to read the vertex's x, y, and z
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
+    glEnableVertexAttribArray(3);
 
     // important: if you have more vertex arrays to draw, make sure you separately define them
     // with unique VAO and VBO IDs, and follow the same process above to upload them to the GPU
