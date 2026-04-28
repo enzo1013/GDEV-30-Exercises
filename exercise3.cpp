@@ -17,6 +17,17 @@
  * S moves the camera back.
  * A moves the camera left.
  * D moves the camera right.
+ * Q rotates the camera left.
+ * E rotates the camera right.
+ * 1 or 2 rotates the camera down.
+ * 3 or 4 rotates the camera up.
+ *****************************************************************************/
+
+/*****************************************************************************
+ * Keyboard controls for lights:
+ * K moves the light to the right. Shift + K, to the left.
+ * I moves the light down. Shift + I, up.
+ * J moves the light forward. Shift + J, back.
  *****************************************************************************/
 
 #include <iostream>
@@ -35,6 +46,10 @@ GLFWwindow *pWindow;
 float cameraYaw = -110.0f;
 float cameraPitch = -54.0f;
 float cameraRotate = 2.0f;
+
+float lightX = 2.0f;
+float lightY = 2.0f;
+float lightZ = 0.0f;
 
 // values for the lookAt matrix
 glm::vec3 cameraEye = glm::vec3(2.0f, 5.0f, -2.0f);  // eye
@@ -524,10 +539,13 @@ void render()
         glm::mat4 normalMatrix;
         normalMatrix = glm::transpose(glm::inverse(modelMatrix));
 
+        glm::vec3 lightPosition = glm::vec3(lightX, lightY, lightZ);
+
         // Pass the three matrices to the vertex shader
         glUniformMatrix4fv(glGetUniformLocation(shader, "projectionViewMatrix"), 1, GL_FALSE, glm::value_ptr(projectionViewMatrix));
         glUniformMatrix4fv(glGetUniformLocation(shader, "modelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
         glUniformMatrix4fv(glGetUniformLocation(shader, "normalMatrix"), 1, GL_FALSE, glm::value_ptr(normalMatrix));
+        glUniform3fv(glGetUniformLocation(shader, "lightPosition"), 1, glm::value_ptr(lightPosition));
 
         // Draw the model
         glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices) / (10 * sizeof(float)));
@@ -594,6 +612,33 @@ void handleKeys(GLFWwindow* pWindow, int key, int scancode, int action, int mode
         sin(glm::radians(cameraPitch)),
         sin(glm::radians(cameraYaw)) * cos(glm::radians(cameraPitch))
         ));
+    }
+
+    // pressing K will move the light to the right. Add shift, and it moves to the left.
+    if (key == GLFW_KEY_K && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
+        if (mode & GLFW_MOD_SHIFT) {
+            lightX -= 10.0f;
+        } else {
+            lightX += 10.0f;
+        }
+    }
+
+    // pressing I will move the light down. Add shift, and it moves up.
+    if (key == GLFW_KEY_I && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
+        if (mode & GLFW_MOD_SHIFT) {
+            lightY -= 10.0f;
+        } else {
+            lightY += 10.0f;
+        }
+    }
+
+    // pressing J will move the light forward. Add shift, and it moves back.
+    if (key == GLFW_KEY_J && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
+        if (mode & GLFW_MOD_SHIFT) {
+            lightZ -= 10.0f;
+        } else {
+            lightZ += 10.0f;
+        }
     }
 }
 

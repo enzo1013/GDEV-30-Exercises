@@ -13,12 +13,12 @@ in vec3 worldSpaceNormal;
 in vec3 objectColor;
 in vec2 texCoord;
 
+uniform vec3 lightPosition;
 uniform sampler2D texture1;
 out vec4 fragmentColor;
 
 void main()
 {
-    vec3 lightPosition = vec3(2.0f, 2.0f, 0.0f);
     vec3 l = normalize(lightPosition - worldSpacePosition);
     vec3 n = normalize(worldSpaceNormal);
     float Cd = max((dot(n, l)), 0.0f);
