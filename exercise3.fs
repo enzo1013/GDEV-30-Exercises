@@ -18,9 +18,12 @@ out vec4 fragmentColor;
 
 void main()
 {
-    // For now, just output the texture color blended with object color
-    // Lighting calculations will be added in later parts of the exercise
+    vec3 lightPosition = vec3(2.0f, 2.0f, 0.0f);
+    vec3 l = normalize(lightPosition - worldSpacePosition);
+    vec3 n = normalize(worldSpaceNormal);
+    float Cd = max((dot(n, l)), 0.0f);
+    float Ca = 0.3f;
     vec4 texColor = texture(texture1, texCoord);
-    fragmentColor = texColor * vec4(objectColor, 1.0f);
+    vec3 finalColor = (Cd + Ca) * objectColor * texColor.rgb;
+    fragmentColor = vec4(finalColor, 1.0f);
 }
-
