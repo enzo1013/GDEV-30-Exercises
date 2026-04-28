@@ -476,11 +476,11 @@ void render()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
 
-    // Projection matrix
-    glm::mat4 projection = glm::perspective(glm::radians(60.0f), (float) WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
-
-    // viewed at using this matrix
-    glm::mat4 view = glm::lookAt(
+    // Calculate projection-view matrix
+    // (combine glm::perspective transform with glm::lookAt transform)
+    glm::mat4 projectionViewMatrix;
+    projectionViewMatrix = glm::perspective(glm::radians(60.0f), (float) WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
+    projectionViewMatrix *= glm::lookAt(
         cameraEye,
         cameraEye + cameraCenter,
         cameraGlobUp
@@ -501,30 +501,36 @@ void render()
 
     // Draw three copies...
     for(int i = 0; i < 3; i++){
-        glm::mat4 model = glm::mat4(1.0f);
+        // Calculate model matrix
+        glm::mat4 modelMatrix = glm::mat4(1.0f); // set to identity first!
 
-        // then translate two of them...
+        // then translate...
         float tx[3] = {-3.0f, 0.0f, 3.0f};
-        model = glm::translate(model, glm::vec3(tx[i], 0.0f, -5.0f));
+        modelMatrix = glm::translate(modelMatrix, glm::vec3(tx[i], 0.0f, -5.0f));
 
-        // then make them rotate...
+        // then rotate...
         float time = (float)glfwGetTime();
         glm::vec3 axis;
         if(i == 0) axis = glm::vec3(1.0f, 0.0f, 0.0f); // X-axis
         else if(i == 1) axis = glm::vec3(0.0f, 1.0f, 0.0f); // Y-axis
         else axis = glm::vec3(0.0f, 0.0f, 1.0f); // Z-axis
-        model = glm::rotate(model, time * 1.0f, axis);
+        modelMatrix = glm::rotate(modelMatrix, time * 1.0f, axis);
 
-        // and scale them
+        // and scale
         float scales[3] = {1.0f, 0.7f, 1.3f};
-        model = glm::scale(model, glm::vec3(scales[i], scales[i], scales[i]));
+        modelMatrix = glm::scale(modelMatrix, glm::vec3(scales[i], scales[i], scales[i]));
 
-        // MVP matrix
-        glm::mat4 mvp = projection * view * model;
-        glUniformMatrix4fv(glGetUniformLocation(shader, "matrix"), 1, GL_FALSE, glm::value_ptr(mvp));
+        // Calculate normal matrix (transpose of inverse of model matrix)
+        glm::mat4 normalMatrix;
+        normalMatrix = glm::transpose(glm::inverse(modelMatrix));
+
+        // Pass the three matrices to the vertex shader
+        glUniformMatrix4fv(glGetUniformLocation(shader, "projectionViewMatrix"), 1, GL_FALSE, glm::value_ptr(projectionViewMatrix));
+        glUniformMatrix4fv(glGetUniformLocation(shader, "modelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+        glUniformMatrix4fv(glGetUniformLocation(shader, "normalMatrix"), 1, GL_FALSE, glm::value_ptr(normalMatrix));
 
         // Draw the model
-        glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices) / (6 * sizeof(float)));
+        glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices) / (10 * sizeof(float)));
     }
 }
 
