@@ -591,6 +591,8 @@ GLuint vao;         // vertex array object (stores the render state for our vert
 GLuint vbo;         // vertex buffer object (reserves GPU memory for our vertex array)
 GLuint shader;      // combined vertex and fragment shader
 GLuint texture;
+GLuint floorTexture;
+GLuint horseTexture;
 // model instances
 Model floorModel;
 Model horseModel;
@@ -636,6 +638,10 @@ bool setup()
     texture = gdevLoadTexture("e3tex1.png", GL_REPEAT, true, true);
     if (! texture)
         return false;
+    floorTexture = gdevLoadTexture("safe.png", GL_REPEAT, true, true); // add this
+    if (!floorTexture) return false;
+    horseTexture = gdevLoadTexture("ballons.png", GL_REPEAT, true, true);
+    if (!horseTexture) return false;
     // bind texture unit 0 and tell shader to use it
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
@@ -719,11 +725,17 @@ void render()
             glDrawArrays(GL_TRIANGLES, 0, count);
         } else if (i == 1) {
             // draw floor model
+            glBindTexture(GL_TEXTURE_2D, floorTexture);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_RED);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED);
+
             glBindVertexArray(0);
             drawModel(floorModel);
             glBindVertexArray(vao);
         } else {
             // draw horse model — disable face culling so both sides render
+            glBindTexture(GL_TEXTURE_2D, horseTexture);
+
             glBindVertexArray(0);
             GLboolean wasCull = glIsEnabled(GL_CULL_FACE);
             if (wasCull) glDisable(GL_CULL_FACE);
