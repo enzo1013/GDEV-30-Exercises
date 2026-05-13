@@ -428,7 +428,7 @@ float vertices[] =
 
 /* -------------------------------------------------------------------------
  * Model code and helpers (floor + horse).
- * Provides `Model`, vertex layout, helpers, and model builders.
+ * Provides Model, vertex layout, helpers, and model builders.
  * ------------------------------------------------------------------------- */
 
 struct Model {
@@ -699,21 +699,40 @@ void render()
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
 
+    // horizontal placement: left, center, right
+    float tx[3] = {-3.0f, 0.0f, 3.0f};
+    // vertical placement: compute using facadeYOffset so lowest point rests on floor
+    float ty[3] = {facadeYOffset, 0.0f, 0.0f};
+
+    // keep models static (no rotation)
+
+    // scale (first model is 2× larger)
+    float scales[3] = {2.0f, 0.7f, 1.3f};
+
+    float horseMoveTime = (float)glfwGetTime();
+    float horseSpeed = 0.5f;
+    float horseLRSpd = 4.0f;
+    float horseFBSpd = 4.0f;
+
+    float horseX = horseLRSpd * sin(horseMoveTime * horseSpeed);
+    float horseZ = horseFBSpd * sin(2.0f * horseMoveTime * horseSpeed);
+
+    float dX = horseLRSpd * horseSpeed * cos(horseMoveTime * horseSpeed);
+    float dZ = horseFBSpd * 2.0f * horseSpeed * cos(2.0f * horseMoveTime * horseSpeed);
+    float yaw = atan2(dX, dZ);
+
     // Draw three objects: original facade (i==0), floor (i==1), horse (i==2)
     for(int i = 0; i < 3; i++){
         glm::mat4 model = glm::mat4(1.0f);
 
-        // horizontal placement: left, center, right
-        float tx[3] = {-3.0f, 0.0f, 3.0f};
-        // vertical placement: compute using facadeYOffset so lowest point rests on floor
-        float ty[3] = {facadeYOffset, 0.0f, 0.0f};
-        model = glm::translate(model, glm::vec3(tx[i], ty[i], -5.0f));
-
-        // keep models static (no rotation)
-
-        // scale (first model is 2× larger)
-        float scales[3] = {2.0f, 0.7f, 1.3f};
-        model = glm::scale(model, glm::vec3(scales[i], scales[i], scales[i]));
+        if (i == 2) {
+            model = glm::translate(model, glm::vec3(horseX, ty[2], -5.0f + horseZ));
+            model = glm::rotate(model, yaw, glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::scale(model, glm::vec3(scales[2], scales[2], scales[2]));
+        } else {
+            model = glm::translate(model, glm::vec3(tx[i], ty[i], -5.0f));
+            model = glm::scale(model, glm::vec3(scales[i], scales[i], scales[i]));
+        }
 
         // MVP matrix
         glm::mat4 mvp = projection * view * model;
