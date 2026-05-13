@@ -24,6 +24,9 @@
 #include <GLFW/glfw3.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <gdev.h>
+#include <vector>
+#include <cstddef>
+#include <cfloat>
 
 // change this to your desired window attributes
 #define WINDOW_WIDTH  1280
@@ -46,6 +49,13 @@ glm::vec3 cameraCenter = glm::normalize(glm::vec3(
 glm::vec3 cameraGlobUp = glm::vec3(0.0f, 1.0f, 0.0f);     // up
 
 float cameraSpeed = 0.5f;
+// mouse / look controls
+float mouseSensitivity = 0.12f;
+bool firstMouse = true;
+double lastX = WINDOW_WIDTH / 2.0;
+double lastY = WINDOW_HEIGHT / 2.0;
+// computed Y offset to place scaled facade on the floor
+float facadeYOffset = 0.0f;
 
 // define a vertex array to hold our vertices
 float vertices[] =
@@ -416,11 +426,174 @@ float vertices[] =
 
 };
 
+/* -------------------------------------------------------------------------
+ * Model code and helpers (floor + horse).
+ * Provides `Model`, vertex layout, helpers, and model builders.
+ * ------------------------------------------------------------------------- */
+
+struct Model {
+    GLuint  VAO;         // vertex array object
+    GLuint  VBO;         // vertex buffer (positions + normals + UVs)
+    GLuint  EBO;         // element (index) buffer
+    GLsizei indexCount;  // number of indices to pass to glDrawElements
+    GLenum  drawMode;    // GL_TRIANGLES
+};
+
+struct Vertex {
+    float pos[3];   // XYZ position
+    float nor[3];   // XYZ normal (unit vector)
+    float uv[2];    // UV texture coordinate
+};
+
+static void addBox(std::vector<Vertex>&        verts,
+                   std::vector<unsigned int>&  idxs,
+                   float cx, float cy, float cz,
+                   float hx, float hy, float hz)
+{
+    static const float UV[4][2] = { {0,1},{1,1},{1,0},{0,0} };
+    struct Face { float nx, ny, nz; float c[4][3]; };
+    const Face faces[6] = {
+        { 1, 0, 0, {{ hx, hy, hz}, { hx,-hy, hz}, { hx,-hy,-hz}, { hx, hy,-hz}} },
+        {-1, 0, 0, {{-hx, hy,-hz}, {-hx,-hy,-hz}, {-hx,-hy, hz}, {-hx, hy, hz}} },
+        { 0, 1, 0, {{-hx, hy,-hz}, { hx, hy,-hz}, { hx, hy, hz}, {-hx, hy, hz}} },
+        { 0,-1, 0, {{-hx,-hy, hz}, { hx,-hy, hz}, { hx,-hy,-hz}, {-hx,-hy,-hz}} },
+        { 0, 0, 1, {{-hx, hy, hz}, { hx, hy, hz}, { hx,-hy, hz}, {-hx,-hy, hz}} },
+        { 0, 0,-1, {{ hx, hy,-hz}, {-hx, hy,-hz}, {-hx,-hy,-hz}, { hx,-hy,-hz}} },
+    };
+
+    for (const Face& f : faces) {
+        unsigned int base = static_cast<unsigned int>(verts.size());
+        for (int v = 0; v < 4; v++) {
+            Vertex vtx;
+            vtx.pos[0] = cx + f.c[v][0];
+            vtx.pos[1] = cy + f.c[v][1];
+            vtx.pos[2] = cz + f.c[v][2];
+            vtx.nor[0] = f.nx; vtx.nor[1] = f.ny; vtx.nor[2] = f.nz;
+            vtx.uv[0]  = UV[v][0]; vtx.uv[1]  = UV[v][1];
+            verts.push_back(vtx);
+        }
+        idxs.push_back(base + 0); idxs.push_back(base + 1); idxs.push_back(base + 2);
+        idxs.push_back(base + 0); idxs.push_back(base + 2); idxs.push_back(base + 3);
+    }
+}
+
+static Model uploadToGPU(const std::vector<Vertex>&       verts,
+                         const std::vector<unsigned int>& idxs)
+{
+    Model m;
+    m.indexCount = static_cast<GLsizei>(idxs.size());
+    m.drawMode   = GL_TRIANGLES;
+
+    glGenVertexArrays(1, &m.VAO);
+    glGenBuffers(1, &m.VBO);
+    glGenBuffers(1, &m.EBO);
+
+    glBindVertexArray(m.VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, m.VBO);
+    glBufferData(GL_ARRAY_BUFFER,
+                 static_cast<GLsizeiptr>(verts.size() * sizeof(Vertex)),
+                 verts.data(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m.EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                 static_cast<GLsizeiptr>(idxs.size() * sizeof(unsigned int)),
+                 idxs.data(), GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                          reinterpret_cast<void*>(offsetof(Vertex, pos)));
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                          reinterpret_cast<void*>(offsetof(Vertex, nor)));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                          reinterpret_cast<void*>(offsetof(Vertex, uv)));
+    glEnableVertexAttribArray(2);
+
+    glBindVertexArray(0);
+    return m;
+}
+
+Model createFloorModel()
+{
+    std::vector<Vertex> verts;
+    std::vector<unsigned int> idxs;
+    const int GRID = 4; const float HALF = 10.0f;
+    const float STEP = (2.0f * HALF) / GRID; const float UV_SCALE = 2.5f;
+    for (int row = 0; row <= GRID; row++) {
+        for (int col = 0; col <= GRID; col++) {
+            Vertex v;
+            v.pos[0] = -HALF + col * STEP; v.pos[1] = 0.0f; v.pos[2] = -HALF + row * STEP;
+            v.nor[0] = 0.0f; v.nor[1] = 1.0f; v.nor[2] = 0.0f;
+            v.uv[0] = col * UV_SCALE; v.uv[1] = row * UV_SCALE;
+            verts.push_back(v);
+        }
+    }
+    const int W = GRID + 1;
+    for (int row = 0; row < GRID; row++) {
+        for (int col = 0; col < GRID; col++) {
+            unsigned int tl = row * W + col;
+            unsigned int tr = tl + 1;
+            unsigned int bl = tl + W;
+            unsigned int br = bl + 1;
+            idxs.push_back(tl); idxs.push_back(bl); idxs.push_back(tr);
+            idxs.push_back(tr); idxs.push_back(bl); idxs.push_back(br);
+        }
+    }
+    return uploadToGPU(verts, idxs);
+}
+
+Model createHorseModel()
+{
+    std::vector<Vertex> verts;
+    std::vector<unsigned int> idxs;
+    addBox(verts, idxs,   0.00f, 0.58f,  0.00f,  0.26f, 0.20f, 0.60f);
+    addBox(verts, idxs,   0.00f, 0.52f,  0.53f,  0.22f, 0.16f, 0.12f);
+    addBox(verts, idxs,   0.00f, 0.60f, -0.56f,  0.23f, 0.17f, 0.10f);
+    addBox(verts, idxs,  -0.17f, 0.20f,  0.45f,  0.07f, 0.20f, 0.07f);
+    addBox(verts, idxs,   0.17f, 0.20f,  0.45f,  0.07f, 0.20f, 0.07f);
+    addBox(verts, idxs,  -0.17f, 0.20f, -0.44f,  0.07f, 0.20f, 0.07f);
+    addBox(verts, idxs,   0.17f, 0.20f, -0.44f,  0.07f, 0.20f, 0.07f);
+    addBox(verts, idxs,  -0.17f, 0.04f,  0.45f,  0.08f, 0.04f, 0.08f);
+    addBox(verts, idxs,   0.17f, 0.04f,  0.45f,  0.08f, 0.04f, 0.08f);
+    addBox(verts, idxs,  -0.17f, 0.04f, -0.44f,  0.08f, 0.04f, 0.08f);
+    addBox(verts, idxs,   0.17f, 0.04f, -0.44f,  0.08f, 0.04f, 0.08f);
+    addBox(verts, idxs,   0.00f, 0.81f,  0.59f,  0.11f, 0.17f, 0.11f);
+    addBox(verts, idxs,   0.00f, 1.03f,  0.67f,  0.10f, 0.14f, 0.10f);
+    addBox(verts, idxs,   0.00f, 1.21f,  0.75f,  0.10f, 0.12f, 0.20f);
+    addBox(verts, idxs,   0.00f, 1.13f,  0.92f,  0.08f, 0.09f, 0.10f);
+    addBox(verts, idxs,  -0.07f, 1.38f,  0.70f,  0.04f, 0.09f, 0.04f);
+    addBox(verts, idxs,   0.07f, 1.38f,  0.70f,  0.04f, 0.09f, 0.04f);
+    addBox(verts, idxs,   0.00f, 1.02f,  0.64f,  0.04f, 0.20f, 0.16f);
+    addBox(verts, idxs,   0.00f, 0.73f, -0.71f,  0.05f, 0.16f, 0.05f);
+    addBox(verts, idxs,   0.00f, 0.55f, -0.77f,  0.04f, 0.12f, 0.04f);
+    return uploadToGPU(verts, idxs);
+}
+
+void drawModel(const Model& model)
+{
+    glBindVertexArray(model.VAO);
+    glDrawElements(model.drawMode, model.indexCount, GL_UNSIGNED_INT, nullptr);
+    glBindVertexArray(0);
+}
+
+void destroyModel(Model& model)
+{
+    glDeleteBuffers(1, &model.EBO);
+    glDeleteBuffers(1, &model.VBO);
+    glDeleteVertexArrays(1, &model.VAO);
+    model.VAO = model.VBO = model.EBO = 0;
+    model.indexCount = 0;
+}
+
 // define OpenGL object IDs to represent the vertex array and the shader program in the GPU
 GLuint vao;         // vertex array object (stores the render state for our vertex array)
 GLuint vbo;         // vertex buffer object (reserves GPU memory for our vertex array)
 GLuint shader;      // combined vertex and fragment shader
 GLuint texture;
+// model instances
+Model floorModel;
+Model horseModel;
 
 // called by the main function to do initial setup, such as uploading vertex
 // arrays, shader programs, etc.; returns true if successful, false otherwise
@@ -463,6 +636,31 @@ bool setup()
     texture = gdevLoadTexture("e3tex1.png", GL_REPEAT, true, true);
     if (! texture)
         return false;
+    // bind texture unit 0 and tell shader to use it
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glUseProgram(shader);
+    GLint loc = glGetUniformLocation(shader, "texture1");
+    if (loc >= 0) glUniform1i(loc, 0);
+    // compute lowest Y of the facade vertices so we can place its base on the floor
+    {
+        size_t floatsPerVertex = 7;
+        size_t totalFloats = sizeof(vertices) / sizeof(vertices[0]);
+        size_t vertexCount = totalFloats / floatsPerVertex;
+        float minY = FLT_MAX;
+        for (size_t vi = 0; vi < vertexCount; ++vi) {
+            float y = vertices[vi * floatsPerVertex + 1];
+            if (y < minY) minY = y;
+        }
+        // first model is scaled by 2.0f in render; compute offset so minY*scale + offset == 0
+        float scale0 = 2.0f;
+        facadeYOffset = -minY * scale0;
+    }
+    // create models
+    floorModel = createFloorModel();
+    horseModel = createHorseModel();
+    if (floorModel.VAO == 0 || horseModel.VAO == 0)
+        return false;
     return true;
 }
 
@@ -489,38 +687,50 @@ void render()
     // using our shader program...
     glUseProgram(shader);
 
-    // Bind VAO
+    // Bind VAO for the original facade
     glBindVertexArray(vao);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
 
-    // Draw three copies...
+    // Draw three objects: original facade (i==0), floor (i==1), horse (i==2)
     for(int i = 0; i < 3; i++){
         glm::mat4 model = glm::mat4(1.0f);
 
-        // then translate two of them...
+        // horizontal placement: left, center, right
         float tx[3] = {-3.0f, 0.0f, 3.0f};
-        model = glm::translate(model, glm::vec3(tx[i], 0.0f, -5.0f));
+        // vertical placement: compute using facadeYOffset so lowest point rests on floor
+        float ty[3] = {facadeYOffset, 0.0f, 0.0f};
+        model = glm::translate(model, glm::vec3(tx[i], ty[i], -5.0f));
 
-        // then make them rotate...
-        float time = (float)glfwGetTime();
-        glm::vec3 axis;
-        if(i == 0) axis = glm::vec3(1.0f, 0.0f, 0.0f); // X-axis
-        else if(i == 1) axis = glm::vec3(0.0f, 1.0f, 0.0f); // Y-axis
-        else axis = glm::vec3(0.0f, 0.0f, 1.0f); // Z-axis
-        model = glm::rotate(model, time * 1.0f, axis);
+        // keep models static (no rotation)
 
-        // and scale them
-        float scales[3] = {1.0f, 0.7f, 1.3f};
+        // scale (first model is 2× larger)
+        float scales[3] = {2.0f, 0.7f, 1.3f};
         model = glm::scale(model, glm::vec3(scales[i], scales[i], scales[i]));
 
         // MVP matrix
         glm::mat4 mvp = projection * view * model;
         glUniformMatrix4fv(glGetUniformLocation(shader, "matrix"), 1, GL_FALSE, glm::value_ptr(mvp));
 
-        // Draw the model
-        glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices) / (6 * sizeof(float)));
+        if (i == 0) {
+            // draw original facade using the VAO
+            GLsizei count = static_cast<GLsizei>(sizeof(vertices) / (7 * sizeof(float)));
+            glDrawArrays(GL_TRIANGLES, 0, count);
+        } else if (i == 1) {
+            // draw floor model
+            glBindVertexArray(0);
+            drawModel(floorModel);
+            glBindVertexArray(vao);
+        } else {
+            // draw horse model — disable face culling so both sides render
+            glBindVertexArray(0);
+            GLboolean wasCull = glIsEnabled(GL_CULL_FACE);
+            if (wasCull) glDisable(GL_CULL_FACE);
+            drawModel(horseModel);
+            if (wasCull) glEnable(GL_CULL_FACE);
+            glBindVertexArray(vao);
+        }
     }
 }
 
@@ -587,6 +797,43 @@ void handleKeys(GLFWwindow* pWindow, int key, int scancode, int action, int mode
     }
 }
 
+// mouse look callback
+void mouseCallback(GLFWwindow* window, double xpos, double ypos)
+{
+    if (firstMouse) {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+
+    double xoffset = xpos - lastX;
+    double yoffset = lastY - ypos; // reversed: y ranges bottom->top
+    lastX = xpos;
+    lastY = ypos;
+
+    xoffset *= mouseSensitivity;
+    yoffset *= mouseSensitivity;
+
+    cameraYaw += (float)xoffset;
+    cameraPitch += (float)yoffset;
+    if (cameraPitch > 89.0f) cameraPitch = 89.0f;
+    if (cameraPitch < -89.0f) cameraPitch = -89.0f;
+
+    cameraCenter = glm::normalize(glm::vec3(
+        cos(glm::radians(cameraYaw)) * cos(glm::radians(cameraPitch)),
+        sin(glm::radians(cameraPitch)),
+        sin(glm::radians(cameraYaw)) * cos(glm::radians(cameraPitch))
+    ));
+}
+
+// scroll callback to adjust camera speed (zoom-like)
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    cameraSpeed += (float)yoffset * 0.1f;
+    if (cameraSpeed < 0.05f) cameraSpeed = 0.05f;
+    if (cameraSpeed > 10.0f) cameraSpeed = 10.0f;
+}
+
 // handler called by GLFW when the window is resized
 void handleResize(GLFWwindow* pWindow, int width, int height)
 {
@@ -623,6 +870,13 @@ int main(int argc, char** argv)
     // set up callback functions to handle window system events
     glfwSetKeyCallback(pWindow, handleKeys);
     glfwSetFramebufferSizeCallback(pWindow, handleResize);
+
+    // mouse and scroll callbacks for free-look and speed control
+    glfwSetCursorPosCallback(pWindow, mouseCallback);
+    glfwSetScrollCallback(pWindow, scrollCallback);
+
+    // capture and hide the cursor for FPS-style look
+    glfwSetInputMode(pWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // don't miss any momentary keypresses
     glfwSetInputMode(pWindow, GLFW_STICKY_KEYS, GLFW_TRUE);
