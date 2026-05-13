@@ -700,14 +700,14 @@ void render()
     glBindTexture(GL_TEXTURE_2D, texture);
 
     // horizontal placement: left, center, right
-    float tx[3] = {-3.0f, 0.0f, 3.0f};
+    float tx[3] = {-0.0f, 0.0f, 3.0f};
     // vertical placement: compute using facadeYOffset so lowest point rests on floor
-    float ty[3] = {facadeYOffset, 0.0f, 0.0f};
+    float ty[3] = {facadeYOffset + 1, 0.0f, 0.0f};
 
     // keep models static (no rotation)
 
     // scale (first model is 2× larger)
-    float scales[3] = {2.0f, 0.7f, 1.3f};
+    float scales[3] = {7.0f, 0.7f, 1.3f};
 
     float horseMoveTime = (float)glfwGetTime();
     float horseSpeed = 0.5f;
