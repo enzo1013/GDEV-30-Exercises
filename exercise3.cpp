@@ -525,7 +525,7 @@ Model createFloorModel()
             Vertex v;
             v.pos[0] = -HALF + col * STEP; v.pos[1] = 0.0f; v.pos[2] = -HALF + row * STEP;
             v.nor[0] = 0.0f; v.nor[1] = 1.0f; v.nor[2] = 0.0f;
-            v.uv[0] = col * UV_SCALE; v.uv[1] = row * UV_SCALE;
+            v.uv[0] = 1.0f; v.uv[1] = row * UV_SCALE;
             verts.push_back(v);
         }
     }
@@ -811,8 +811,8 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos)
     lastX = xpos;
     lastY = ypos;
 
-    xoffset *= mouseSensitivity;
-    yoffset *= mouseSensitivity;
+    xoffset *= mouseSensitivity/50;
+    yoffset *= mouseSensitivity/50;
 
     cameraYaw += (float)xoffset;
     cameraPitch += (float)yoffset;
