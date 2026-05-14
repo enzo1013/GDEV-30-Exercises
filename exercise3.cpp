@@ -928,7 +928,7 @@ void handleKeys(GLFWwindow* pWindow, int key, int scancode, int action, int mode
     }
 
     if (key == GLFW_KEY_L && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
-        specularity -= 8.0f;=
+        specularity -= 8.0f;
         if (specularity < 1.0f) specularity = 1.0f;
     }
 }
